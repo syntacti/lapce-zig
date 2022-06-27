@@ -1,0 +1,19 @@
+name = "lapce-zig"
+display-name = "Zig"
+description = "Zig for Lapce: powered by Zig Language Server"
+version = "0.1.1"
+author = "Lapce"
+repository = "ghishadow/lapce-zig"
+wasm = "lapce-zig.wasm"
+
+[configuration]
+language_id = "zig"
+env_command = "echo \"ZLS_PATH=$(where zls)\""
+[configuration.options]
+semanticTokens = true
+[configuration.options.diagnostics]
+enable = false
+enableExperimental = false
+
+[configuration.options.binary]
+args = []
