@@ -8,9 +8,10 @@ wasm = "lapce-zig.wasm"
 
 [configuration]
 language_id = "zig"
-env_command = "echo \"ZLS_PATH=$(which zls)\""
+system_lsp = true
+
 [configuration.options]
-semanticTokens = true
+semanticTokens = false
 [configuration.options.diagnostics]
 enable = false
 enableExperimental = false
