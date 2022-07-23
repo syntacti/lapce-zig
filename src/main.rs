@@ -16,6 +16,7 @@ pub struct PluginInfo {
 pub struct Configuration {
     language_id: String,
     system_lsp: bool,
+    enabled: bool,
     options: Option<Value>,
 }
 
@@ -25,24 +26,21 @@ impl LapcePlugin for State {
     fn initialize(&mut self, info: serde_json::Value) {
         eprintln!("Starting lapce-zig plugin!");
         let info = serde_json::from_value::<PluginInfo>(info).unwrap();
-        let arch = match info.arch.as_str() {
-            "x86_64" => "x86_64",
-            "aarch64" => "aarch64",
-            _ => return,
-        };
-        let os = match info.os.as_str() {
-            "linux" => "unknown-linux-gnu",
-            "macos" => "apple-darwin",
-            "windows" => "pc-windows-msvc",
-            _ => return,
-        };
+
+        if info.configuration.enabled {
+            let exec_path = if info.configuration.system_lsp {
+                "zls".to_string()
+            } else {
+                "".to_string()
+            };
 
         serde_json::to_writer_pretty(std::io::stderr(), &info).unwrap();
         start_lsp(
-            "zls",
-            "zig",
+           &exec_path,
+            info.configuration.language_id.as_str(),
             info.configuration.options,
             info.configuration.system_lsp,
         );
     }
+}
 }

@@ -8,13 +8,17 @@ wasm = "lapce-zig.wasm"
 
 [configuration]
 language_id = "zig"
+env_command = "zig env"
 system_lsp = true
+enabled = true
 
 [configuration.options]
-semanticTokens = false
+scopes = ["source.zig"]
+semanticTokens = true
+roots = ["build.zig"]
 [configuration.options.diagnostics]
-enable = false
-enableExperimental = false
+enable = true
+enableExperimental = true
 
 [configuration.options.binary]
 args = []
