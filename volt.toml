@@ -1,0 +1,12 @@
+name = "lapce-zig"
+display-name = "Zig"
+description = "Zig for Lapce: powered by Zig Language Server"
+version = "0.1.1"
+author = "Lapce"
+repository = "ghishadow/lapce-zig"
+wasm = "lapce-zig.wasm"
+
+
+[activation]
+language = ["zig"]
+workspace-contains = ["*/build.zig"]
