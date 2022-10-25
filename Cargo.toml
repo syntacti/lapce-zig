@@ -2,7 +2,6 @@
 edition = "2021"
 name = "lapce-zig"
 version = "0.0.1"
-resolver = "2"
 
 [target.'cfg(target_os = "wasi")'.dependencies]
 

@@ -103,13 +103,16 @@ fn download_zls() -> Result<bool> {
         _ => panic!("unknow os"),
     };
     
-    let lapce_zls_base_name = format!("zls");
+    let mut lapce_zls_base_name = format!("zls");
+    if os == "windows" {
+            lapce_zls_base_name = format!("zls.exe");
+    }
     let lapce_zls_path = Path::new(&lapce_zls_base_name);
 
     if !lapce_zls_path.exists() {
         let volt_download_url = format!(
-            "{}/{}-{}/bin/zls",
-            &DOWNLOADS_ROOT, &arch,&os
+            "{}/{}-{}/bin/{}",
+            &DOWNLOADS_ROOT, &arch,&os, &lapce_zls_base_name
         );
         PLUGIN_RPC.stderr(&format!("Download_URL {}", volt_download_url));
 
@@ -122,100 +125,3 @@ fn download_zls() -> Result<bool> {
 
     Ok(true)
 }
-
-// const LANGUAGE_ID: &str = "zig";
-// const DOWNLOADS_ROOT: &str = "https://zig.pm/zls/downloads";
-
-// fn initialize(params: InitializeParams) -> Result<()> {
-//     eprintln!("starting zig server");
-//     let mut server_args = vec![];
-
-//     // Check for user specified LSP server path
-//     // ```
-//     // [lapce-plugin-name.lsp]
-//     // serverPath = "[path or filename]"
-//     // serverArgs = ["--arg1", "--arg2"]
-//     // ```
-//     if let Some(options) = params.initialization_options.as_ref() {
-//         if let Some(lsp) = options.get("lsp") {
-//             if let Some(args) = lsp.get("serverArgs") {
-//                 if let Some(args) = args.as_array() {
-//                     for arg in args {
-//                         if let Some(arg) = arg.as_str() {
-//                             server_args.push(arg.to_string());
-//                         }
-//                     }
-//                 }
-//             }
-
-//             if let Some(server_path) = lsp.get("serverPath") {
-//                 if let Some(server_path) = server_path.as_str() {
-//                     if !server_path.is_empty() {
-//                         PLUGIN_RPC.start_lsp(
-//                             Url::parse(&format!("urn:{}", server_path))?,
-//                             server_args,
-//                             LANGUAGE_ID,
-//                             params.initialization_options,
-//                         );
-//                         return Ok(());
-//                     }
-//                 }
-//             }
-//         }
-//     }
-
-//     // Architecture check
-//     let arch = match VoltEnvironment::architecture().as_deref() {
-//         Ok("x86_64") => "x86_64",
-//         Ok("aarch64") => "aarch64",
-//         _ => return Ok(()),
-//     };
-
-//     // OS check
-//     let os = match VoltEnvironment::operating_system().as_deref() {
-//         Ok("macos") => "macos",
-//         Ok("linux") => "linux",
-//         Ok("windows") => "windows",
-//         _ => return Ok(()),
-//     };
-
-//     // Download URL
-//     let filename = format!("{DOWNLOADS_ROOT}/releases/download/");
-
-//     // see lapce_plugin::Http for available API to download files
-
-//     let _ = match VoltEnvironment::operating_system().as_deref() {
-//         Ok("windows") => {
-//             format!("{}.exe", "zls")
-//         }
-//         _ => "zls".to_string(),
-//     };
-
-//     // Plugin working directory
-//     let volt_uri = VoltEnvironment::uri()?;
-//     let server_path = Url::parse(&volt_uri)?.join("zls")?;
-//     eprintln!("server path is ready");
-//     // Available language IDs
-//     // https://github.com/lapce/lapce/blob/HEAD/lapce-proxy/src/buffer.rs#L173
-//     PLUGIN_RPC.start_lsp(
-//         server_path,
-//         server_args,
-//         LANGUAGE_ID,
-//         params.initialization_options,
-//     );
-
-//     Ok(())
-// }
-
-// impl LapcePlugin for State {
-//     fn handle_request(&mut self, _id: u64, method: String, params: Value) {
-//         #[allow(clippy::single_match)]
-//         match method.as_str() {
-//             Initialize::METHOD => {
-//                 let params: InitializeParams = serde_json::from_value(params).unwrap();
-//                 let _ = initialize(params);
-//             }
-//             _ => {}
-//         }
-//     }
-// }
