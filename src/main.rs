@@ -1,12 +1,11 @@
-use std::{path::Path, fs};
-
+use std::{path::Path};
 use anyhow::Result;
 use lapce_plugin::{
     psp_types::{
         lsp_types::{request::Initialize, DocumentFilter, DocumentSelector, InitializeParams, Url},
         Request,
     },
-    register_plugin, LapcePlugin, PLUGIN_RPC, Http,
+    register_plugin, LapcePlugin, PLUGIN_RPC, Http, VoltEnvironment
 };
 use serde_json::Value;
 
@@ -15,9 +14,27 @@ struct State {}
 
 register_plugin!(State);
 
+
+macro_rules! string {
+    ( $x:expr ) => {
+        String::from($x)
+    };
+}
+
 fn initialize(params: InitializeParams) -> Result<()> {
     PLUGIN_RPC.stderr("lapce-zig");
-    download_zls()?;
+    let arch = match VoltEnvironment::architecture().as_deref() {
+        Ok("x86_64") => "x86_x64",
+        Ok("aarch64") => "aarch64",
+        _ => panic!("unknow arch"),
+    };
+    let os = match VoltEnvironment::operating_system().as_deref() {
+        Ok("linux") => "linux",
+        Ok("macos") => "macos",
+        Ok("windows") => "windows",
+        _ => return Ok(()),
+    };
+    download_zls(arch, os)?;
     let document_selector: DocumentSelector = vec![DocumentFilter {
         language: Some(String::from("zig")),
         pattern: Some(String::from("**.zig")),
@@ -59,7 +76,7 @@ fn initialize(params: InitializeParams) -> Result<()> {
 
     // let server_path = Url::parse("urn:zls")?;
 
-    let volt_uri = std::env::var("VOLT_URI")?;
+    let volt_uri = VoltEnvironment::uri()?;
     let server_path = Url::parse(&volt_uri)
         .unwrap()
         .join("zls")
@@ -89,24 +106,15 @@ impl LapcePlugin for State {
     }
 }
 
-fn download_zls() -> Result<bool> {
+fn download_zls(arch: &str, os: &str) -> Result<bool> {
     const DOWNLOADS_ROOT: &str = "https://zig.pm/zls/downloads";
-    let arch = match std::env::var("VOLT_ARCH").as_deref() {
-        Ok("x86_64") => "x86_x64",
-        Ok("aarch64") => "aarch64",
-        _ => panic!("unknow arch"),
-    };
-    let os = match std::env::var("VOLT_OS").as_deref() {
-        Ok("linux") => "linux",
-        Ok("macos") => "macos",
-        Ok("windows") => "windows",
-        _ => panic!("unknow os"),
-    };
     
-    let mut lapce_zls_base_name = format!("zls");
-    if os == "windows" {
-            lapce_zls_base_name = format!("zls.exe");
-    }
+    let lapce_zls_base_name = match VoltEnvironment::operating_system().as_deref() {
+        Ok("windows") => {
+            string!("zls.exe")
+        }
+        _ => string!("zls"),
+    };
     let lapce_zls_path = Path::new(&lapce_zls_base_name);
 
     if !lapce_zls_path.exists() {
@@ -117,8 +125,10 @@ fn download_zls() -> Result<bool> {
         PLUGIN_RPC.stderr(&format!("Download_URL {}", volt_download_url));
 
         let mut resp = Http::get(&volt_download_url)?;
-        let body = resp.body_read_all()?;
-        fs::write(&lapce_zls_path, body)?;
+        if resp.status_code.is_success() {
+            let body = resp.body_read_all()?;
+            std::fs::write(&lapce_zls_path, body)?;
+        }
     } else {
         PLUGIN_RPC.stderr("zls already exists");
     }

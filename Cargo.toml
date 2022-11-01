@@ -9,9 +9,7 @@ version = "0.0.1"
 anyhow = "1.0"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-# lapce-plugin = { git = "https://github.com/lapce/lapce-plugin-rust.git", branch = "volt" }
-lapce-plugin = { git = "https://github.com/panekj/lapce-plugin-rust.git", branch = "volt" }
-# lapce-plugin = { path = "../../lapce-plugin-rust" }
+lapce-plugin = { git = "https://github.com/lapce/lapce-plugin-rust.git" }
 
 [profile.release]
 opt-level = 3
