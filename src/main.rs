@@ -24,7 +24,7 @@ macro_rules! string {
 fn initialize(params: InitializeParams) -> Result<()> {
     PLUGIN_RPC.stderr("lapce-zig");
     let arch = match VoltEnvironment::architecture().as_deref() {
-        Ok("x86_64") => "x86_x64",
+        Ok("x86_64") => "x86_64",
         Ok("aarch64") => "aarch64",
         _ => panic!("unknow arch"),
     };
