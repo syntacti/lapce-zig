@@ -1,19 +1,18 @@
-use std::{path::Path};
 use anyhow::Result;
 use lapce_plugin::{
     psp_types::{
         lsp_types::{request::Initialize, DocumentFilter, DocumentSelector, InitializeParams, Url},
         Request,
     },
-    register_plugin, LapcePlugin, PLUGIN_RPC, Http, VoltEnvironment
+    register_plugin, Http, LapcePlugin, VoltEnvironment, PLUGIN_RPC,
 };
 use serde_json::Value;
+use std::path::Path;
 
 #[derive(Default)]
 struct State {}
 
 register_plugin!(State);
-
 
 macro_rules! string {
     ( $x:expr ) => {
@@ -77,10 +76,7 @@ fn initialize(params: InitializeParams) -> Result<()> {
     // let server_path = Url::parse("urn:zls")?;
 
     let volt_uri = VoltEnvironment::uri()?;
-    let server_path = Url::parse(&volt_uri)
-        .unwrap()
-        .join("zls")
-        .unwrap();
+    let server_path = Url::parse(&volt_uri).unwrap().join("zls")?;
     PLUGIN_RPC.start_lsp(
         server_path,
         server_args,
@@ -108,7 +104,7 @@ impl LapcePlugin for State {
 
 fn download_zls(arch: &str, os: &str) -> Result<bool> {
     const DOWNLOADS_ROOT: &str = "https://zig.pm/zls/downloads";
-    
+
     let lapce_zls_base_name = match VoltEnvironment::operating_system().as_deref() {
         Ok("windows") => {
             string!("zls.exe")
@@ -120,14 +116,14 @@ fn download_zls(arch: &str, os: &str) -> Result<bool> {
     if !lapce_zls_path.exists() {
         let volt_download_url = format!(
             "{}/{}-{}/bin/{}",
-            &DOWNLOADS_ROOT, &arch,&os, &lapce_zls_base_name
+            &DOWNLOADS_ROOT, &arch, &os, &lapce_zls_base_name
         );
         PLUGIN_RPC.stderr(&format!("Download_URL {}", volt_download_url));
 
         let mut resp = Http::get(&volt_download_url)?;
         if resp.status_code.is_success() {
             let body = resp.body_read_all()?;
-            std::fs::write(&lapce_zls_path, body)?;
+            std::fs::write(lapce_zls_path, body)?;
         }
     } else {
         PLUGIN_RPC.stderr("zls already exists");
