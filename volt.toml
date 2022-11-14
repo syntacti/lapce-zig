@@ -4,7 +4,7 @@ description = "Zig for Lapce: powered by Zig Language Server"
 version = "0.1.1"
 author = "Syntacti"
 repository = "syntacti/lapce-zig"
-icon = "zig-logo.webp"
+icon = "assets/zig-logo.webp"
 wasm = "lapce-zig.wasm"
 
 
