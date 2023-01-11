@@ -33,7 +33,6 @@ fn initialize(params: InitializeParams) -> Result<()> {
         Ok("windows") => "windows",
         _ => return Ok(()),
     };
-    download_zls(arch, os)?;
     let document_selector: DocumentSelector = vec![DocumentFilter {
         language: Some(String::from("zig")),
         pattern: Some(String::from("**.zig")),
@@ -74,7 +73,7 @@ fn initialize(params: InitializeParams) -> Result<()> {
     }
 
     // let server_path = Url::parse("urn:zls")?;
-
+    download_zls(arch, os)?;
     let volt_uri = VoltEnvironment::uri()?;
     let server_path = Url::parse(&volt_uri).unwrap().join("zls")?;
     PLUGIN_RPC.start_lsp(
