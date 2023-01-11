@@ -1,7 +1,7 @@
 name = "lapce-zig"
 display-name = "Zig"
 description = "Zig for Lapce: powered by Zig Language Server"
-version = "0.1.1"
+version = "0.1.2"
 author = "Syntacti"
 repository = "syntacti/lapce-zig"
 icon = "assets/zig-logo.webp"
