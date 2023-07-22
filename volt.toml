@@ -1,0 +1,19 @@
+name = "lapce-zig"
+display-name = "Zig"
+description = "Zig for Lapce: powered by Zig Language Server"
+version = "0.1.2"
+author = "Syntacti"
+repository = "syntacti/lapce-zig"
+icon = "assets/zig-logo.webp"
+wasm = "lapce-zig.wasm"
+
+
+[activation]
+language = ["zig"]
+workspace-contains = ["*/build.zig"]
+
+
+
+[config."serverPath"]
+default = ""
+description = "Path to zls executable. When empty, it points to the bundled binary."
